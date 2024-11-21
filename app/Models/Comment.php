@@ -11,7 +11,8 @@ class Comment extends Model {
     protected $fillable = ['apodo', 'correo', 'post_id', 'texto'];
 
     // de comment a post: de muchos a 1
-
-    
+    public function post(): BelongsTo {
+        return $this->belongsTo(Post::class, 'post_id');
+    }
 
 }

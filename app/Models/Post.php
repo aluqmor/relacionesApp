@@ -11,5 +11,8 @@ class Post extends Model {
     protected $fillable = ['titulo', 'entrada', 'texto'];
 
     // de post a comment: de 1 a muchos
+    public function comments(): HasMany {
+        return $this->HasMany(Comment::class, 'post_id');
+    }
     
 }
