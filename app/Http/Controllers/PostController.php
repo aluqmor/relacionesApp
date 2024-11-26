@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Comment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -44,12 +45,30 @@ class PostController extends Controller
         }
     }
 
+    public function storeComment(Request $request, Post $post) {
+        $validated = $request->validate([
+            'apodo' => 'required|min:5|max:40',
+            'correo' => 'required|min:6|max:100',
+            'texto' => 'required|min:20',
+        ]);
+    
+        $comment = new Comment($request->all());
+        $comment->post_id = $post->id;
+    
+        try {
+            $comment->save();
+            return back()->with('message', 'El comentario se ha insertado');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['correo' => $e->getMessage()]);
+        }
+    }
+
     /**
      * Display the specified resource.
      */
     public function show(Post $post) {
         // retorna view de vista de blade, con datos de un  post
-        return view('post.show', ['post' => $post]);
+        return view('post.show', ['post' => $post, 'now' => Carbon::now()]);
     }
 
     /**
