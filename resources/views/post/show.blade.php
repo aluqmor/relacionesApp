@@ -3,6 +3,14 @@
 
 @section('content')
 {!! strip_tags($post->texto, env('PERMITTED_TAGS')) !!} <!-- // peligro controlado -->
+<div class="d-flex justify-content-end mb-4 mt-4">
+    <form action="{{ route('post.destroy', $post->id) }}" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este artículo?');" class="me-2">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-danger text-uppercase">Eliminar artículo</button>
+    </form>
+    <a class="btn btn-primary text-uppercase" href="{{ route('post.edit', $post->id) }}">Editar artículo</a>
+</div>
 
 <hr>
 

@@ -74,24 +74,40 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Post $post)
-    {
-        // retorna de view de vista blade de un post
+    public function edit(Post $post) {
+        return view('post.edit', ['post' => $post]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
-    {
-        // validate try catch con update
+    public function update(Request $request, Post $post) {
+        $validated = $request->validate([
+            'entrada' => 'required|min:60|max:250|unique:post,entrada,' . $post->id,
+            'texto' => 'required|min:100',
+            'titulo' => 'required|min:25|max:60|unique:post,titulo,' . $post->id,
+        ]);
+    
+        $post->fill($request->all());
+        $post->texto = strip_tags($post->texto, env('PERMITTED_TAGS', ''));
+    
+        try {
+            $post->save();
+            return redirect()->route('post.show', $post->id)->with('message', 'El artículo se ha actualizado');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['message' => 'El artículo no se ha podido actualizar']);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
-    {
-        // try catch con delete
+    public function destroy(Post $post) {
+        try {
+            $post->delete();
+            return redirect('/')->with('message', 'El artículo se ha eliminado');
+        } catch (\Exception $e) {
+            return back()->withErrors(['message' => 'El artículo no se ha podido eliminar']);
+        }
     }
 }
